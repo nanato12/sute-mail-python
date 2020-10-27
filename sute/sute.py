@@ -10,8 +10,8 @@ class Sute:
     ses_id: str = None
     mails: list = None
 
-    def __init__(self, ses_id: str = None) -> None:
-        self.client = Client()
+    def __init__(self, ses_id: str = None, proxies: dict = None) -> None:
+        self.client = Client(proxies)
         self.ses_id = ses_id
         self.login()
 
