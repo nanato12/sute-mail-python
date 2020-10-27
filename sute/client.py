@@ -7,11 +7,11 @@ from .exception import ReadTimeoutError, ConnectionTimeoutError
 
 class Client:
 
-    proxy: str = None
+    proxies: dict = None
     session: requests.session = None
 
-    def __init__(self, proxy: str = None) -> None:
-        self.proxy = proxy
+    def __init__(self, proxies: dict = None) -> None:
+        self.proxies = proxies
         self.session = requests.session()
         self.init_connection()
 
@@ -42,7 +42,7 @@ class Client:
                 url=url,
                 headers=headers,
                 params=params,
-                proxies=self.proxy,
+                proxies=self.proxies,
                 timeout=5.0,
             )
         except ConnectTimeout:
@@ -67,7 +67,7 @@ class Client:
                 headers=headers,
                 json=json,
                 data=data,
-                proxies=self.proxy,
+                proxies=self.proxies,
                 timeout=5.0,
             )
         except ConnectTimeout:
