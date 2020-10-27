@@ -33,14 +33,14 @@ class Sute:
         res = self.client.get_request(Config.HOST)
         return Func.get_all_radio_button_values(res.text, "input_manualmaildomain")
 
-    def create_new_address(self, user: str, domain: str) -> None:
+    def create_new_address(self, user: str, domain: str) -> str:
         self.check_new_address(user, domain)
         params = self._create_payload(user, domain, "addMailAddrByManual")
         self.client.get_request(Config.HOST, params=params)
         self.refresh_address_list()
         return self.mails[-1]
 
-    def create_new_random_address(self) -> None:
+    def create_new_random_address(self) -> str:
         params = self._create_payload("", "", "addMailAddrByAuto")
         self.client.get_request(Config.HOST, params=params)
         self.refresh_address_list()
