@@ -68,27 +68,6 @@ class Message:
     def __str__(self) -> str:
         return f"Message(id={self.id}, title={self.title})"
 
-    def get_title(self) -> str:
-        params = self._create_payload()
-        res = self.client.get_request(
-            Config.HOST + Config.PATH_MAIL_LIST, params=params
-        )
-        soup = BeautifulSoup(res.text, "html.parser")
-
-        mail_data = []
-        for script in soup.find_all("script"):
-            if "openMailData" in str(script):
-                result = re.search(
-                    r"openMailData\(\'(.*)\', \'(.*)\', \'(.*)\'\)*", str(script)
-                )
-                content = {
-                    "id": result.group(1),
-                    "key": result.group(2),
-                    "tag": result.group(3),
-                }
-                mail_data.append(Message(self.client, **content))
-        return mail_data
-
     def _create_payload(self) -> dict:
         return {
             "noscroll": 1,
