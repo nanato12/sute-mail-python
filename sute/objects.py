@@ -56,9 +56,10 @@ class Message:
     tag: str = None
     title: str = None
     text: str = None
+    sender: str = None
 
     def __init__(
-        self, client: Client, id: str, key: str, tag: str, title: str, text: str = None
+        self, client: Client, id: str, key: str, tag: str, sender:str = None, title: str = None, text: str = None 
     ) -> None:
         self.client = client
         self.id = id
@@ -66,6 +67,7 @@ class Message:
         self.tag = tag
         self.title = title
         self.text = self._read_mail()
+        self.sender = re.findall("from\=(.*)\;replyto",tag)[0].replace('%40','@')
 
     def __str__(self) -> str:
         return f"Message(id={self.id}, title={self.title})"
