@@ -55,23 +55,32 @@ class Message:
     key: str = None
     tag: str = None
     title: str = None
+    text: str = None
 
     def __init__(
-        self, client: Client, id: str, key: str, tag: str, title: str = None
+        self, client: Client, id: str, key: str, tag: str, title: str, text: str = None
     ) -> None:
         self.client = client
         self.id = id
         self.key = key
         self.tag = tag
         self.title = title
+        self.text = self._read_mail()
 
     def __str__(self) -> str:
         return f"Message(id={self.id}, title={self.title})"
 
+    def _read_mail(self) -> str:
+        params = self._create_payload()
+        res = self.client.post_request(
+            Config.HOST + Config.PATH_MAIL_CONTENT, data=params
+        )
+        return res.text
+
     def _create_payload(self) -> dict:
         return {
             "noscroll": 1,
-            "UID_enc": self.client.get_session_id(),
+            "UID_enc": self.client.get_session_id().replace('%2F','/'),
             "num": self.id,
             "key": self.key,
             "pagewidth": 885,
