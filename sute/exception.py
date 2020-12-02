@@ -28,6 +28,12 @@ class ConnectionTimeoutError(Exception):
     """
 
 
+class ParseError(Exception):
+    """
+    Scraping parse exception.
+    """
+
+
 class UnknownException(Exception):
     """
     unknown exception.

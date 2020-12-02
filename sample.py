@@ -1,8 +1,10 @@
 import os
+from typing import Optional
 
 from sute import Sute
 
 if __name__ == "__main__":
+    ses_id: Optional[str]
     if os.path.exists(".ses"):
         with open(".ses") as ses_file:
             ses_id = ses_file.read()
@@ -10,7 +12,6 @@ if __name__ == "__main__":
         ses_id = None
 
     sute = Sute(ses_id=ses_id)
-
 
     print("############# MY MAIL ############")
     for mail in sute.mails:

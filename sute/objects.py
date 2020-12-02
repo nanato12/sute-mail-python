@@ -1,15 +1,17 @@
 import re
+from typing import Optional
 
 from bs4 import BeautifulSoup
 
 from .client import Client
 from .config import Config
+from .exception import ParseError
 from .function import Func
 
 
 class Mail:
-    address: str = None
-    client: Client = None
+    address: str
+    client: Client
 
     def __init__(self, address: str, client: Client) -> None:
         self.address = address
@@ -27,19 +29,22 @@ class Mail:
 
         mail_data = []
         for script in soup.find_all("script"):
-            if "openMailData" in str(script):
-                result = re.search(
-                    r"openMailData\(\'(.*)\', \'(.*)\', \'(.*)\'\)*", str(script)
-                )
+            result = re.search(
+                r"openMailData\(\'(.*)\', \'(.*)\', \'(.*)\'\)*", str(script)
+            )
+            if result:
                 content = {
                     "id": result.group(1),
                     "key": result.group(2),
                     "tag": result.group(3),
                 }
-                content["title"] = soup.find(
-                    id="area_mail_title_{id}".format(id=content["id"])
-                ).text.strip()
-                mail_data.append(Message(self.client, **content))
+            else:
+                raise ParseError("Not found openMailData")
+
+            content["title"] = soup.find(
+                id="area_mail_title_{id}".format(id=content["id"])
+            ).text.strip()
+            mail_data.append(Message(self.client, **content))
         return mail_data
 
     def _create_payload(self) -> dict:
@@ -51,15 +56,22 @@ class Mail:
 
 
 class Message:
-    id: str = None
-    key: str = None
-    tag: str = None
-    title: str = None
-    text: str = None
-    sender: str = None
+    id: str
+    key: str
+    tag: str
+    title: Optional[str]
+    text: Optional[str]
+    sender: Optional[str]
 
     def __init__(
-        self, client: Client, id: str, key: str, tag: str, sender:str = None, title: str = None, text: str = None 
+        self,
+        client: Client,
+        id: str,
+        key: str,
+        tag: str,
+        sender: str = None,
+        title: str = None,
+        text: str = None,
     ) -> None:
         self.client = client
         self.id = id
@@ -67,7 +79,7 @@ class Message:
         self.tag = tag
         self.title = title
         self.text = self._read_mail()
-        self.sender = re.findall("from\=(.*)\;replyto",tag)[0].replace('%40','@')
+        self.sender = re.findall(r"from\=(.*)\;replyto", tag)[0].replace("%40", "@")
 
     def __str__(self) -> str:
         return f"Message(id={self.id}, title={self.title})"
@@ -82,7 +94,7 @@ class Message:
     def _create_payload(self) -> dict:
         return {
             "noscroll": 1,
-            "UID_enc": self.client.get_session_id().replace('%2F','/'),
+            "UID_enc": self.client.get_session_id().replace("%2F", "/"),
             "num": self.id,
             "key": self.key,
             "pagewidth": 885,

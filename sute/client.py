@@ -1,18 +1,20 @@
+from typing import Optional
+
 import requests
 from requests.exceptions import ConnectTimeout, ReadTimeout
 
 from .config import Config
-from .exception import ReadTimeoutError, ConnectionTimeoutError
+from .exception import ConnectionTimeoutError, ReadTimeoutError
 
 
 class Client:
 
-    proxies: dict = None
-    session: requests.session = None
+    proxies: Optional[dict] = None
+    session: requests.Session
 
-    def __init__(self, proxies: dict = None) -> None:
+    def __init__(self, proxies: Optional[dict] = None) -> None:
         self.proxies = proxies
-        self.session = requests.session()
+        self.session = requests.Session()
         self.init_connection()
 
     def init_connection(self) -> None:

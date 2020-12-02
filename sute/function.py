@@ -1,7 +1,8 @@
-import time
-import string
 import random
+import string
+import time
 from datetime import datetime
+from typing import Optional
 
 from bs4 import BeautifulSoup
 
@@ -10,7 +11,7 @@ from .config import Config
 
 class Func:
     @staticmethod
-    def log(text):
+    def log(text: str) -> None:
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print("[{time}] {text}".format(time=now, text=text))
 
@@ -29,15 +30,16 @@ class Func:
         ]
 
     @staticmethod
-    def get_csrf_token(html: str) -> str:
+    def get_csrf_token(html: str) -> Optional[str]:
         soup = BeautifulSoup(html, "html.parser")
         for meta in soup.find_all("meta", attrs={"name": Config.CSRF_TOKEN_TAG}):
             return meta.get("content")
+        return None
 
     @staticmethod
-    def get_epoctime_int():
+    def get_epoctime_int() -> int:
         return int(time.time())
 
     @staticmethod
-    def generate_random_string(count):
+    def generate_random_string(count: int) -> str:
         return "".join([random.choice(string.ascii_letters) for _ in range(count)])
