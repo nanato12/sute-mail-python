@@ -1,16 +1,20 @@
+from typing import List, Optional
+
 from .client import Client
 from .config import Config
-from .objects import Mail
-from .function import Func
 from .exception import AlreadyEmailAddressExsist, UnknownException
+from .function import Func
+from .objects import Mail
 
 
 class Sute:
-    client: Client = None
-    ses_id: str = None
-    mails: list = None
+    client: Client
+    ses_id: Optional[str] = None
+    mails: List[Mail] = []
 
-    def __init__(self, ses_id: str = None, proxies: dict = None) -> None:
+    def __init__(
+        self, ses_id: Optional[str] = None, proxies: Optional[dict] = None
+    ) -> None:
         self.client = Client(proxies)
         self.ses_id = ses_id
         self.login()
@@ -22,7 +26,7 @@ class Sute:
             self.client.save_session_id()
         self.refresh_address_list()
 
-    def refresh_address_list(self) -> list:
+    def refresh_address_list(self) -> None:
         res = self.client.get_request(Config.HOST + Config.PATH_ADDRESS_LIST)
         self.mails = [
             Mail(address, self.client)
@@ -33,14 +37,14 @@ class Sute:
         res = self.client.get_request(Config.HOST)
         return Func.get_all_radio_button_values(res.text, "input_manualmaildomain")
 
-    def create_new_address(self, user: str, domain: str) -> str:
+    def create_new_address(self, user: str, domain: str) -> Mail:
         self.check_new_address(user, domain)
         params = self._create_payload(user, domain, "addMailAddrByManual")
         self.client.get_request(Config.HOST, params=params)
         self.refresh_address_list()
         return self.mails[-1]
 
-    def create_new_random_address(self) -> str:
+    def create_new_random_address(self) -> Mail:
         params = self._create_payload("", "", "addMailAddrByAuto")
         self.client.get_request(Config.HOST, params=params)
         self.refresh_address_list()

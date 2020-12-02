@@ -6,7 +6,7 @@ class Config:
     PATH_MAIL_LIST = "/recv._ajax.php"
     PATH_MAIL_CONTENT = "/smphone.app.recv.view.php"
 
-    HEADERS = {}
+    HEADERS: dict = {}
 
     SESSION_ID_KEY = "cookie_uidenc_seted"
     CSRF_TOKEN_KEY = "cookie_csrf_token"
