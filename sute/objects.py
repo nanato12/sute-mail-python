@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 
 from .client import Client
 from .config import Config
-from .exception import ParseError
 from .function import Func
 
 
@@ -39,7 +38,7 @@ class Mail:
                     "tag": result.group(3),
                 }
             else:
-                raise ParseError("Not found openMailData")
+                continue
 
             content["title"] = soup.find(
                 id="area_mail_title_{id}".format(id=content["id"])
