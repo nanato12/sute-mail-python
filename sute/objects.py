@@ -47,6 +47,18 @@ class Mail:
             mail_data.append(Message(self.client, **content))
         return mail_data
 
+    def delete_mailbox(self) -> int:
+        res = self.client.get_request(Config.HOST + Config.PATH_ADDRESS_LIST)
+        soup = BeautifulSoup(res.text, "html.parser")
+        mail_num = soup.find("span", string=self.address).get("id").split("addr_")[1]
+        params = self._create_payload()
+        params.update([("action", "delAddrList"), ("num_list", mail_num)])
+
+        res = self.client.get_request(
+            Config.HOST + Config.PATH_ADDRESS_LIST, params=params
+        )
+        return res.status_code
+
     def _create_payload(self) -> dict:
         return {
             "nopost": 1,
