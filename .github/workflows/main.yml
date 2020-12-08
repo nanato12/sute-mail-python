@@ -1,6 +1,6 @@
 name: pychecker
 
-on: [push]
+on: [pull_request, push]
 
 jobs:
   pychecker:
