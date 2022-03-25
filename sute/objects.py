@@ -63,6 +63,8 @@ class Mail:
             "nopost": 1,
             "q": self.address,
             "_": Func.get_epoctime_int(),
+            "csrf_token_check": self.client.get_csrf_token(),
+            "csrf_subtoken_check": self.client.get_csrf_subtoken(),
         }
 
 

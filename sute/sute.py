@@ -71,6 +71,7 @@ class Sute:
             "nopost": 1,
             "UID_enc": self.client.get_session_id(),
             "csrf_token_check": self.client.get_csrf_token(),
+            "csrf_subtoken_check": self.client.get_csrf_subtoken(),
             "newuser": user,
             "newdomain": domain,
             "_": Func.get_epoctime_int(),
