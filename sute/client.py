@@ -1,3 +1,4 @@
+import re
 from typing import Optional
 
 import requests
@@ -15,13 +16,23 @@ class Client:
     def __init__(self, proxies: Optional[dict] = None) -> None:
         self.proxies = proxies
         self.session = requests.Session()
-        self.init_connection()
+        self.res = self.init_connection()
 
-    def init_connection(self) -> None:
-        self.get_request(Config.HOST)
+    def init_connection(self) -> requests.Response:
+        return self.get_request(Config.HOST)
 
     def get_csrf_token(self) -> str:
         return self.session.cookies.get_dict()[Config.CSRF_TOKEN_KEY]
+
+    def get_csrf_subtoken(self) -> str:
+        subtoken = re.search('csrf_subtoken_check=(.*?)"', self.res.text)
+        if not subtoken:
+            captcha = re.search("(/recaptcha_create.*?)'", self.res.text)
+            if captcha:
+                print(f"CAPTCHA: {Config.HOST+captcha.group(1)}")
+                exit(1)
+            raise Exception("Couldn't get csrf_subtoken.")
+        return subtoken.group(1)
 
     def get_session_id(self) -> str:
         return self.session.cookies.get_dict()[Config.SESSION_ID_KEY]
